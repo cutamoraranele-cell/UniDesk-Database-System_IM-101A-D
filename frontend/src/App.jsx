@@ -1277,6 +1277,31 @@ export default function App() {
       return "Hello! How can I assist you with university offices, student IDs, payments, or appointments today?";
     }
 
+    // 0. Date, Day & Time Inquiries
+    if (/\b(what\s*(day|date|time)\s*(is\s*it|is\s*today|today)?|today['’]?s\s*(date|day)|current\s*(time|date)|day\s*is\s*today|what\s*time)\b/i.test(q)) {
+      const now = new Date();
+      const fullDate = now.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+      const timeStr = now.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true });
+      const isWeekend = now.getDay() === 0 || now.getDay() === 6;
+      return `Today is **${fullDate}** and the current time is **${timeStr}**.\n\n` +
+        (isWeekend 
+          ? `⚠️ Most university administrative offices (such as the Registrar and Cashier) are **closed** on weekends, but you can still use UniDesk to search directories or book appointments for upcoming weekdays!`
+          : `✅ Campus administrative offices (like the **Registrar's Office**, **Cashier**, and **Student Affairs Office**) are currently on their regular weekday operating schedule (8:00 AM – 5:00 PM).\n\nHow can I help you with your campus transactions today?`);
+    }
+
+    // 0.1 Identity & System Capabilities
+    if (/\b(who\s*are\s*you|what\s*(is\s*your\s*name|can\s*you\s*do|is\s*unidesk)|tell\s*me\s*about\s*yourself|what\s*do\s*you\s*do|introduce\s*yourself)\b/i.test(q)) {
+      return "Hello! I am the **UniDesk AI Concierge**, your official campus operations intelligence assistant. 🎓\n\nI can help you navigate campus offices, check live operating hours, locate classrooms and buildings, and book direct appointment slots for Registrar, Cashier, OSA, and Guidance services. How can I assist you today?";
+    }
+
+    // 0.2 Friendly Greetings & Polite Chit-Chat
+    if (/^(hi|hello|hey|good\s*(morning|afternoon|evening)|howdy)\b/i.test(q)) {
+      return "Hello! I am your UniDesk Campus Concierge. I'm here to assist you with office navigation, appointment scheduling, and university administrative procedures. What can I help you with today?";
+    }
+    if (/how\s*are\s*you/i.test(q)) {
+      return "I'm doing great, thank you for asking! 😊 I'm ready to help you navigate campus offices, check operating hours, or book appointments. What do you need assistance with today?";
+    }
+
     // 1. Check for Ambiguous Queries (Confirm Intent)
     if ((q.includes('certificate') || q.includes('cert')) && !q.includes('enrollment') && !q.includes('good moral') && !q.includes('moral')) {
       return "Could you please clarify: are you requesting an Enrollment Certificate (Registrar's Office) or a Good Moral Certificate (Student Affairs Office)?";
@@ -1375,8 +1400,8 @@ export default function App() {
       return "Please reach out to **Guidance and Counseling**. They offer counseling sessions, mental health support, bullying intervention, and scholarship information.";
     }
 
-    // Fallback with helpful campus services directory
-    return "I couldn't find an exact match for that concern in our campus directory. You can ask me about Student IDs, Transcripts, Tuition & Fees, Guidance Counseling, or visit the General Admin Office for direct assistance!";
+    // Grounded fallback limited to UniDesk system
+    return "I understand your question! As the **UniDesk Campus Concierge**, my knowledge is specialized in our university directory, administrative procedures, and campus facilities.\n\nI can assist you with Student IDs & Good Moral certificates, Transcripts, Tuition payments, Guidance counseling, and office operating hours. What would you like help with today?";
   }
 
   // --------------------------------------------------------------------------

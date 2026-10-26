@@ -168,13 +168,13 @@ async function resolveWorkingGeminiModel(apiKey) {
     return resolvedGeminiModelCache.get(cleanKey);
   }
 
-  // Production candidates with high quota limits (1,500 requests/day vs 20 for experimental)
+  // Production candidates with high quota limits and active availability
   const candidateModels = [
-    { model: 'gemini-2.5-flash', apiVersion: 'v1beta' },
-    { model: 'gemini-2.0-flash', apiVersion: 'v1beta' },
-    { model: 'gemini-1.5-flash', apiVersion: 'v1beta' },
-    { model: 'gemini-1.5-flash-latest', apiVersion: 'v1beta' },
-    { model: 'gemini-2.0-flash-lite', apiVersion: 'v1beta' },
+    { model: 'gemini-flash-lite-latest', apiVersion: 'v1beta' },
+    { model: 'gemini-3.5-flash-lite', apiVersion: 'v1beta' },
+    { model: 'gemini-3.1-flash-lite', apiVersion: 'v1beta' },
+    { model: 'gemini-flash-latest', apiVersion: 'v1beta' },
+    { model: 'gemini-2.5-flash-lite', apiVersion: 'v1beta' },
     { model: 'gemini-3.8-flash', apiVersion: 'v1beta' }
   ];
 
@@ -197,7 +197,7 @@ async function resolveWorkingGeminiModel(apiKey) {
   }
 
   // Fallback default
-  const fallback = { model: 'gemini-2.5-flash', apiVersion: 'v1beta' };
+  const fallback = { model: 'gemini-flash-lite-latest', apiVersion: 'v1beta' };
   resolvedGeminiModelCache.set(cleanKey, fallback);
   return fallback;
 }
@@ -272,26 +272,37 @@ async function runGeminiLLMEngine(apiKey, message, history, previousContext, dbC
   const cleanKey = apiKey.trim();
   const { model, apiVersion } = await resolveWorkingGeminiModel(cleanKey);
 
-  const systemInstruction = `You are the UniDesk AI Concierge, a local cognitive engine designed to help students navigate campus services. Your goal is to interpret natural language queries and direct students to the correct office based on the services they need.
+  const now = new Date();
+  const currentDateTimeStr = now.toLocaleDateString('en-US', {
+    weekday: 'long',
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric'
+  }) + ` at ` + now.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true });
 
-You have access to the following Office Service Directories. When a user asks a question, analyze their keywords and map them to the most relevant office below. If a query fits multiple offices, prioritize the one that best matches the primary intent.
+  const systemInstruction = `You are the UniDesk AI Concierge, the official campus intelligence assistant for university students, staff, and faculty.
 
-OFFICE DIRECTORIES:
-1. Registrar's Office
+CURRENT SERVER DATE & TIME:
+${currentDateTimeStr}
+(Use this to answer questions about what day/date/time it is, or whether offices are currently open.)
+
+YOUR SCOPE & GROUNDING:
+1. Conversational & Responsive: You can respond warmly to greetings ("hello", "good morning"), conversational banter, questions about what day/time it is, who you are, or how you work.
+2. Grounded Campus Routing: For campus, academic, or administrative concerns, map the user's intent to the real offices, rooms, buildings, and fees in the CAMPUS GROUNDING DATA below.
+3. System Identity: You are the UniDesk Campus Concierge. If a user asks something completely outside university life (e.g. general trivia, coding homework, unrelated topics), answer politely and briefly, but gently guide them back to campus operations, office hours, and appointment booking.
+4. Actionable Steps: Mention physical room numbers, building names, and whether in-person visits or fees are required.
+
+OFFICE SERVICE DIRECTORIES:
+1. Registrar's Office (REG-01)
    - Keywords: Academic records, Transcripts, Transcript request, Enrollment certificates, Certificate of enrollment, Grading history, Degree completion.
-2. Student Affairs Office
-   - Keywords: ID cards, Lost ID card, Student conduct, Good moral certificates, Good moral certificate, Disciplinary records, Student organization.
-3. Cashier
+2. Student Affairs Office (OSA-01)
+   - Keywords: ID cards, Lost ID card, Student conduct, Bullying / harassment complaints, Good moral certificates, Disciplinary records, Student organizations.
+3. Cashier (CSH-01)
    - Keywords: Tuition payments, Fees, Refunds, Refund request, Payment concerns, Balance inquiry, Receipt.
-4. Guidance and Counseling
-   - Keywords: Counseling sessions, Counseling appointment, Bullying related issue, Mental health, Stress, Anxiety, Scholarship information, Academic advising (if related to personal well-being).
-
-RESPONSE GUIDELINES:
-1. Conversational & Helpful: Greet students warmly, answer general questions politely, and maintain an engaging, supportive tone.
-2. Accurate Office Routing: When an administrative problem, department, or transaction is mentioned, direct them to the correct office, building, and room from the campus grounding data.
-3. Confirm Intent: If a question is ambiguous, ask a friendly clarifying question.
-4. Actionable Advice: Provide helpful next steps such as fees, required documents, and open operating hours.
-5. Unrecognized Inquiries: If an inquiry doesn't match a campus office, respond helpfully and explain the services UniDesk provides, suggesting they check with the General Admin Office if needed.
+4. Guidance and Counseling (GDC-01)
+   - Keywords: Counseling sessions, Counseling appointment, Bullying support, Emotional well-being, Mental health, Stress, Anxiety, Scholarship information, Academic advising.
+5. University Health Clinic (HLT-01)
+   - Keywords: Medical clearance, Physical exam, Doctor consultation, Dental checkup, First aid.
 
 EXAMPLE INTERACTIONS:
 User: "I lost my student ID."
@@ -1040,6 +1051,50 @@ async function runConversationalEngine(message, history, previousContext, dbCont
     };
   }
 
+  // 1.6. REAL-TIME DATE, DAY & TIME INQUIRIES
+  if (/\b(what\s*(day|date|time)\s*(is\s*it|is\s*today|today)?|today['’]?s\s*(date|day)|current\s*(time|date)|day\s*is\s*today|what\s*time)\b/i.test(cleanMsg)) {
+    const now = new Date();
+    const fullDate = now.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+    const timeStr = now.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true });
+    const isWeekend = now.getDay() === 0 || now.getDay() === 6;
+
+    return {
+      reply: `Today is **${fullDate}** and the current server time is **${timeStr}**.\n\n` +
+        (isWeekend 
+          ? `⚠️ Most university administrative offices (such as the Registrar and Cashier) are **closed** on weekends, but you can still search the campus directory or book appointments for upcoming weekdays!`
+          : `✅ Campus administrative offices (like the **Registrar's Office**, **Cashier**, and **Student Affairs Office**) are currently on their regular weekday operating schedule (8:00 AM – 5:00 PM).\n\nHow can I help you with your campus transactions today?`),
+      detectedIntent: 'TIME_DATE_INQUIRY',
+      suggestions: [
+        "⏰ Check office operating hours",
+        "📅 Book an appointment",
+        "Lost Student ID Card",
+        "Official Transcript Request"
+      ],
+      engineUsed: 'UNIDESK_COGNITIVE_ENGINE'
+    };
+  }
+
+  // 1.7. IDENTITY, CAPABILITIES & SYSTEM SCOPE
+  if (/\b(who\s*are\s*you|what\s*(is\s*your\s*name|can\s*you\s*do|is\s*unidesk)|tell\s*me\s*about\s*yourself|what\s*do\s*you\s*do|introduce\s*yourself)\b/i.test(cleanMsg)) {
+    return {
+      reply: `Hello! I am the **UniDesk AI Concierge**, your official campus operations intelligence assistant. 🎓\n\n` +
+        `Here is what I can do for you:\n` +
+        `• 🧭 **Campus Directory & Navigation:** Tell me your concern (e.g. lost ID, graduation certificate, clinic clearance) and I'll direct you to the exact building, floor, and room.\n` +
+        `• ⏰ **Operating Hours:** Check real-time schedules for any campus office.\n` +
+        `• 📅 **Direct Appointments:** Book and schedule in-person consultations directly in our database.\n` +
+        `• 💳 **Fee Information:** Check standard processing fees and Cashier settlement procedures.\n\n` +
+        `What can I help you with today?`,
+      detectedIntent: 'SYSTEM_INTRODUCTION',
+      suggestions: [
+        "Lost Student ID Card",
+        "Official Transcript Request",
+        "Tuition & Cashier Fees",
+        "Guidance & Counseling"
+      ],
+      engineUsed: 'UNIDESK_COGNITIVE_ENGINE'
+    };
+  }
+
   // 2. CHECK FOR MULTI-TURN CONTEXT (e.g. Follow-up booking, directions, or hours)
   const isFollowUpBooking = /^(yes|yeah|sure|please\s*do|book\s*it|schedule\s*it|reserve\s*it|make\s*an\s*appointment|proceed)\b/i.test(cleanMsg) ||
     /book|schedule|reserve|appointment/i.test(cleanMsg);
@@ -1295,24 +1350,22 @@ async function runConversationalEngine(message, history, previousContext, dbCont
     };
   }
 
-  // 7. FALLBACK IF NOT MATCHED IN DIRECTORY
+  // 7. RESPONSIVE GROUNDED FALLBACK (Limited only to UniDesk campus system)
   return {
-    reply: `I couldn't find an exact match for that specific inquiry in our campus directory.
-
-Here are the key services I can assist you with right now:
-• **Student ID & Good Moral** → Student Affairs Office (OSA)
-• **Transcripts & Certifications** → Registrar's Office
-• **Tuition & Balance Inquiries** → Cashier Office
-• **Counseling & Student Wellness** → Guidance and Counseling
-• **Medical & Dental Clearances** → Campus Clinic
-
-You can also visit the **General Admin Office** or ask me about any of the items above!`,
-    detectedIntent: 'CAMPUS_DIRECTORY_FALLBACK',
+    reply: `I understand your question! As the **UniDesk Campus Concierge**, my knowledge and operations are specifically grounded in our university directory, administrative procedures, and campus facilities.\n\n` +
+      `Here are the core campus services I can assist you with:\n` +
+      `• **Student ID & Good Moral** → Student Affairs Office (OSA)\n` +
+      `• **Transcripts & Records** → Registrar's Office\n` +
+      `• **Tuition & Balance Inquiries** → Cashier Office\n` +
+      `• **Counseling & Student Wellness** → Guidance and Counseling\n` +
+      `• **Medical & Dental Clearances** → Campus Clinic\n\n` +
+      `If you have questions about campus procedures, office hours, or building locations, please let me know!`,
+    detectedIntent: 'GROUNDED_CONVERSATIONAL_RESPONSE',
     suggestions: [
       "Lost Student ID Card",
       "Official Transcript Request",
-      "Tuition Payments & Fees",
-      "Guidance & Counseling"
+      "⏰ Office Operating Hours",
+      "📅 Book an appointment"
     ],
     engineUsed: 'UNIDESK_COGNITIVE_ENGINE'
   };
