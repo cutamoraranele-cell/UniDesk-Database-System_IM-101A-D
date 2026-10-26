@@ -264,6 +264,74 @@ export async function getAIEngineStatus(req, res) {
   });
 }
 
+// Helper: Accurately resolve which campus office is suggested by the AI or query
+function resolveDetectedOffice(aiText, userMessage, dbContext) {
+  if (!dbContext || !dbContext.offices) return null;
+  const reply = (aiText || '').toLowerCase();
+  const q = (userMessage || '').toLowerCase();
+
+  // If the reply is an informational fallback listing all campus services, avoid false matches
+  if (reply.includes("couldn't find an exact match") || reply.includes("key services i can assist you with")) {
+    return null;
+  }
+
+  // 1. Direct Office Codes in AI reply
+  for (const o of dbContext.offices) {
+    if (aiText && aiText.includes(o.office_code)) {
+      return o;
+    }
+  }
+
+  // 2. Office keywords from AI reply text (prioritize specific service units over payment counter)
+  const officeKeywords = [
+    { code: 'GDC', keys: ['guidance and counseling', 'guidance & counseling', 'guidance center', 'counseling room', 'guidance counselor', 'mental health counseling'] },
+    { code: 'OSA', keys: ['student affairs', 'office of student affairs', 'osa', 'student welfare'] },
+    { code: 'REG', keys: ["registrar's office", 'office of the registrar', 'university registrar', 'registrar'] },
+    { code: 'HLT', keys: ['health clinic', 'university clinic', 'campus clinic', 'medical clinic', 'clinic house'] },
+    { code: 'LIB', keys: ['university library', 'library desk', 'learning commons'] },
+    { code: 'LAB', keys: ['computer lab', 'computer laboratory'] },
+    { code: 'AUD', keys: ['auditorium events desk', 'auditorium', 'friena auditorium'] },
+    { code: 'CSH', keys: ['cashier office', 'university cashier', 'cashier payment', 'cashier counter', 'cashier'] }
+  ];
+
+  for (const def of officeKeywords) {
+    for (const key of def.keys) {
+      if (reply.includes(key)) {
+        const found = dbContext.offices.find(o => (o.office_code || '').toUpperCase().includes(def.code));
+        if (found) return found;
+      }
+    }
+  }
+
+  // 3. Fallback to query intent keywords
+  if (/\bbullying\b|\bbullied\b|\bharass(ment)?\b|\bdepress(ion|ed)?\b|\banxiety\b|\banxious\b|\bcounsel(ing|or)\b|\bmental\s*health\b/i.test(q)) {
+    return dbContext.offices.find(o => (o.office_code || '').toUpperCase().includes('GDC')) || null;
+  }
+  if (/\blost\b.*?\b(student\s*)?id\b|\breplace(ment)?\s*(student\s*)?id\b|\bstudent\s*id\b|\bgood\s*moral\b|\bstudent\s*conduct\b|\bdisciplin(e|ary)\b|\bstudent\s*organi[sz]ation|\bstudent\s*clubs?\b/i.test(q)) {
+    return dbContext.offices.find(o => (o.office_code || '').toUpperCase().includes('OSA')) || null;
+  }
+  if (/\btranscript(s)?\b|\btor\b|\benrollment\s*certificate\b|\bgrading\s*history\b|\bgrades?\b|\bdegree\s*completion\b|\bacademic\s*records?\b|\bdiploma\b/i.test(q)) {
+    return dbContext.offices.find(o => (o.office_code || '').toUpperCase().includes('REG')) || null;
+  }
+  if (/\brefund(s)?\b|\bmoney\s*back\b|\btuition\b|\bbalance\b|\breceipt(s)?\b|\bfee(s)?\b|\bpayments?\b/i.test(q)) {
+    return dbContext.offices.find(o => (o.office_code || '').toUpperCase().includes('CSH')) || null;
+  }
+  if (/\bclinic\b|\bmedical\b|\bdoctor\b|\bphysician\b|\bdental\b|\bhealth\b|\bfirst\s*aid\b/i.test(q)) {
+    return dbContext.offices.find(o => (o.office_code || '').toUpperCase().includes('HLT')) || null;
+  }
+  if (/\blibrary\b|\bbook\s*loan\b|\bstudy\s*cubicle\b/i.test(q)) {
+    return dbContext.offices.find(o => (o.office_code || '').toUpperCase().includes('LIB')) || null;
+  }
+  if (/\bcomputer\s*lab\b|\blab\s*workstation\b/i.test(q)) {
+    return dbContext.offices.find(o => (o.office_code || '').toUpperCase().includes('LAB')) || null;
+  }
+  if (/\bauditorium\b|\bevent\s*booking\b|\bsymposium\b/i.test(q)) {
+    return dbContext.offices.find(o => (o.office_code || '').toUpperCase().includes('AUD')) || null;
+  }
+
+  return null;
+}
+
 // ============================================================================
 // LAYER 1: GOOGLE GEMINI CLOUD LLM ENGINE (RAG & Tool Calling)
 // ============================================================================
@@ -451,18 +519,13 @@ Example: [[BOOK_ACTION:OSA-01:ISS-ID-LOST]] or [[BOOK_ACTION:REG-01:ISS-TOR-REQ]
 
   // Detect which office was discussed if not already found
   if (!detectedOffice) {
-    for (const o of dbContext.offices) {
-      if (aiText.toLowerCase().includes(o.office_name.toLowerCase()) || aiText.includes(o.office_code)) {
-        detectedOffice = o;
-        break;
-      }
-    }
+    detectedOffice = resolveDetectedOffice(aiText, message, dbContext);
   }
 
   return {
     reply: aiText,
-    detectedOffice: detectedOffice || previousContext.lastOffice || null,
-    detectedIssue: detectedIssue || previousContext.lastIssue || null,
+    detectedOffice: detectedOffice || null,
+    detectedIssue: detectedIssue || null,
     detectedIntent: reservationData ? 'BOOKING_EXECUTED' : 'CONVERSATIONAL_INQUIRY',
     reservation: reservationData,
     suggestions: generateSmartFollowUpSuggestions(detectedOffice, detectedIssue, reservationData),
@@ -624,12 +687,7 @@ Example: [[BOOK_ACTION:OSA-01:ISS-ID-LOST]] or [[BOOK_ACTION:REG-01:ISS-TOR-REQ]
 
   // Detect office or issue in text if not set by booking
   if (!detectedOffice) {
-    for (const o of dbContext.offices) {
-      if (aiText.toLowerCase().includes(o.office_name.toLowerCase()) || aiText.includes(o.office_code)) {
-        detectedOffice = o;
-        break;
-      }
-    }
+    detectedOffice = resolveDetectedOffice(aiText, message, dbContext);
   }
 
   if (!detectedIssue) {
@@ -644,8 +702,8 @@ Example: [[BOOK_ACTION:OSA-01:ISS-ID-LOST]] or [[BOOK_ACTION:REG-01:ISS-TOR-REQ]
   return {
     reply: aiText,
     reasoningContent: reasoningContent,
-    detectedOffice: detectedOffice || previousContext.lastOffice || null,
-    detectedIssue: detectedIssue || previousContext.lastIssue || null,
+    detectedOffice: detectedOffice || null,
+    detectedIssue: detectedIssue || null,
     detectedIntent: reservationData ? 'BOOKING_EXECUTED' : 'CONVERSATIONAL_INQUIRY',
     reservation: reservationData,
     suggestions: generateSmartFollowUpSuggestions(detectedOffice, detectedIssue, reservationData),

@@ -6,14 +6,14 @@ import CampusMapView from './components/CampusMapView.jsx';
 // INITIAL MOCK / SEED DATA
 // ============================================================================
 const INITIAL_OFFICES = [
-  { id: 1, n: "Registrar's Office", b: "Bates Building", r: "Ground Floor", h: "Mon–Fri, 8:00 AM–5:00 PM", d: "Academic records, transcripts, diplomas, and enrollment certificates.", phone: "+63 (38) 411-2283 ext. 101", email: "registrar@unidesk.edu", dir: "Bates Building ground floor lobby, Windows 1 to 4." },
-  { id: 2, n: "Cashier Office", b: "Bates Building", r: "Ground Floor", h: "Mon–Fri, 8:00 AM–4:30 PM", d: "Tuition assessments, administrative fee settlements, refunds, and official receipts.", phone: "+63 (38) 411-2283 ext. 102", email: "cashier@unidesk.edu", dir: "Bates Building ground floor, treasury payment counters." },
-  { id: 3, n: "Student Affairs Office", b: "Activity Center Building", r: "2nd Floor", h: "Mon–Fri, 8:00 AM–5:00 PM", d: "Student identification cards, student conduct, student org accreditation, and good moral certificates.", phone: "+63 (38) 411-2283 ext. 201", email: "osa@unidesk.edu", dir: "Activity Center Building, take the main stairs to the 2nd floor." },
-  { id: 4, n: "Guidance & Counseling Room", b: "CAS Building", r: "5th Floor", h: "Mon–Fri, 8:30 AM–5:00 PM", d: "Confidential psychological counseling, peer support, career assessment, and scholarships.", phone: "+63 (38) 411-2283 ext. 501", email: "guidance@unidesk.edu", dir: "CAS Building, take the elevator/stairs to the 5th floor." },
-  { id: 5, n: "University Health Clinic", b: "Clinic House", r: "Ground Floor", h: "Mon–Fri, 8:00 AM–5:00 PM", d: "Campus health triage, physician consultations, pharmacy, and medical clearances.", phone: "+63 (38) 411-2283 ext. 103", email: "clinic@unidesk.edu", dir: "Clinic House ground floor entrance." },
-  { id: 6, n: "University Library Desk", b: "CAS Building", r: "3rd Floor", h: "Mon–Sat, 7:30 AM–7:00 PM", d: "Book reservations, study cubicles, reference collections, and learning commons.", phone: "+63 (38) 411-2283 ext. 301", email: "library@unidesk.edu", dir: "CAS Building 3rd floor, main circulation desk." },
-  { id: 7, n: "Computer Laboratory Desk", b: "Bates Building", r: "Ground Floor", h: "Mon–Fri, 8:00 AM–6:00 PM", d: "High-speed computing access, programming lab slots, and software stations.", phone: "+63 (38) 411-2283 ext. 105", email: "lab@unidesk.edu", dir: "Bates Building ground floor, room 103." },
-  { id: 8, n: "Auditorium Events Desk", b: "Friena Building", r: "5th Floor", h: "Mon–Fri, 8:00 AM–5:00 PM", d: "Auditorium bookings, event permits, convocations, and symposium arrangements.", phone: "+63 (38) 411-2283 ext. 505", email: "auditorium@unidesk.edu", dir: "Friena Building 5th floor lobby." }
+  { id: 1, code: "REG-01", n: "Registrar's Office", b: "Bates Building", r: "Ground Floor", h: "Mon–Fri, 8:00 AM–5:00 PM", d: "Academic records, transcripts, diplomas, and enrollment certificates.", phone: "+63 (38) 411-2283 ext. 101", email: "registrar@unidesk.edu", dir: "Bates Building ground floor lobby, Windows 1 to 4." },
+  { id: 2, code: "CSH-01", n: "Cashier Office", b: "Bates Building", r: "Ground Floor", h: "Mon–Fri, 8:00 AM–4:30 PM", d: "Tuition assessments, administrative fee settlements, refunds, and official receipts.", phone: "+63 (38) 411-2283 ext. 102", email: "cashier@unidesk.edu", dir: "Bates Building ground floor, treasury payment counters." },
+  { id: 3, code: "OSA-01", n: "Student Affairs Office", b: "Activity Center Building", r: "2nd Floor", h: "Mon–Fri, 8:00 AM–5:00 PM", d: "Student identification cards, student conduct, student org accreditation, and good moral certificates.", phone: "+63 (38) 411-2283 ext. 201", email: "osa@unidesk.edu", dir: "Activity Center Building, take the main stairs to the 2nd floor." },
+  { id: 4, code: "GDC-01", n: "Guidance & Counseling Room", b: "CAS Building", r: "5th Floor", h: "Mon–Fri, 8:30 AM–5:00 PM", d: "Confidential psychological counseling, peer support, career assessment, and scholarships.", phone: "+63 (38) 411-2283 ext. 501", email: "guidance@unidesk.edu", dir: "CAS Building, take the elevator/stairs to the 5th floor." },
+  { id: 5, code: "HLT-01", n: "University Health Clinic", b: "Clinic House", r: "Ground Floor", h: "Mon–Fri, 8:00 AM–5:00 PM", d: "Campus health triage, physician consultations, pharmacy, and medical clearances.", phone: "+63 (38) 411-2283 ext. 103", email: "clinic@unidesk.edu", dir: "Clinic House ground floor entrance." },
+  { id: 6, code: "LIB-01", n: "University Library Desk", b: "CAS Building", r: "3rd Floor", h: "Mon–Sat, 7:30 AM–7:00 PM", d: "Book reservations, study cubicles, reference collections, and learning commons.", phone: "+63 (38) 411-2283 ext. 301", email: "library@unidesk.edu", dir: "CAS Building 3rd floor, main circulation desk." },
+  { id: 7, code: "LAB-01", n: "Computer Laboratory Desk", b: "Bates Building", r: "Ground Floor", h: "Mon–Fri, 8:00 AM–6:00 PM", d: "High-speed computing access, programming lab slots, and software stations.", phone: "+63 (38) 411-2283 ext. 105", email: "lab@unidesk.edu", dir: "Bates Building ground floor, room 103." },
+  { id: 8, code: "AUD-01", n: "Auditorium Events Desk", b: "Friena Building", r: "5th Floor", h: "Mon–Fri, 8:00 AM–5:00 PM", d: "Auditorium bookings, event permits, convocations, and symposium arrangements.", phone: "+63 (38) 411-2283 ext. 505", email: "auditorium@unidesk.edu", dir: "Friena Building 5th floor lobby." }
 ];
 
 const INITIAL_ISSUES = [
@@ -785,42 +785,86 @@ export default function App() {
     setAuthMode('in');
   };
 
-  // Helper: Identify which of the 4 campus offices is referred by AI Concierge or query keywords
+  // Helper: Identify which campus office is referred by AI Concierge or query keywords
   const detectReferredOffice = (queryText, replyText) => {
     // 1. From AI response text if available
     if (replyText) {
       const r = replyText.toLowerCase();
-      if (r.includes('student affairs')) return offices.find(o => o.id === 2);
-      if (r.includes("registrar's office") || r.includes('registrar')) return offices.find(o => o.id === 1);
-      if (r.includes('cashier')) return offices.find(o => o.id === 3);
-      if (r.includes('guidance and counseling') || r.includes('guidance & counseling') || r.includes('guidance') || r.includes('counseling')) return offices.find(o => o.id === 4);
+      // Skip generic fallback directory listing to avoid false matches
+      const isFallbackList = r.includes("couldn't find an exact match") || r.includes("key services i can assist you with");
+      if (!isFallbackList) {
+        if (r.includes('guidance and counseling') || r.includes('guidance & counseling') || r.includes('guidance center') || r.includes('counseling room') || r.includes('guidance counselor')) {
+          return offices.find(o => o.id === 4);
+        }
+        if (r.includes('student affairs') || r.includes('office of student affairs') || r.includes('osa')) {
+          return offices.find(o => o.id === 3);
+        }
+        if (r.includes("registrar's office") || r.includes('registrar') || r.includes('academic records')) {
+          return offices.find(o => o.id === 1);
+        }
+        if (r.includes('health clinic') || r.includes('university clinic') || r.includes('campus clinic') || r.includes('clinic house')) {
+          return offices.find(o => o.id === 5);
+        }
+        if (r.includes('university library') || r.includes('library desk')) {
+          return offices.find(o => o.id === 6);
+        }
+        if (r.includes('computer laboratory') || r.includes('computer lab') || r.includes('lab desk')) {
+          return offices.find(o => o.id === 7);
+        }
+        if (r.includes('auditorium events desk') || r.includes('auditorium')) {
+          return offices.find(o => o.id === 8);
+        }
+        if (r.includes('cashier office') || r.includes('cashier counter') || r.includes('cashier payment') || r.includes('cashier')) {
+          return offices.find(o => o.id === 2);
+        }
+      }
     }
 
     // 2. From query keywords
     const q = (queryText || '').toLowerCase().trim();
     if (!q) return null;
 
-    // Student Affairs Office (id: 2)
+    // Guidance & Counseling (id: 4)
+    if (/\bstress(ed)?\b|\banxiety\b|\banxious\b|\boverwhelmed\b|\bdepressed\b|\bdepression\b|\bcounseling\b|\bcounselor\b|\bbullying\b|\bbullied\b|\bharassment\b|\bmental\s*health\b|\bwell-?being\b|\bscholarship/i.test(q)) {
+      return offices.find(o => o.id === 4);
+    }
+    // Student Affairs Office (id: 3)
     if (/\blost\b.*?\b(student\s*)?id\b|\breplace(ment)?\s*(student\s*)?id\b|\b(student\s*)?id\s*cards?\b|\bstudent\s*id\b|\bgood\s*moral\b|\bstudent\s*conduct\b|\bdisciplin(e|ary)\b|\bstudent\s*organi[sz]ation|\bstudent\s*clubs?\b/i.test(q)) {
-      return offices.find(o => o.id === 2);
+      return offices.find(o => o.id === 3);
     }
     // Registrar's Office (id: 1)
     if (/\btranscript(s)?\b|\btor\b|\benrollment\s*certificate\b|\bgrading\s*history\b|\bgrades?\b|\bdegree\s*completion\b|\bacademic\s*records?\b|\bdiploma\b/i.test(q)) {
       return offices.find(o => o.id === 1);
     }
-    // Cashier (id: 3)
+    // Cashier (id: 2)
     if (/\brefund(s)?\b|\bmoney\s*back\b|\btuition\b|\bbalance\b|\breceipt(s)?\b|\bfee(s)?\b|\bpayments?\b/i.test(q)) {
-      return offices.find(o => o.id === 3);
+      return offices.find(o => o.id === 2);
     }
-    // Guidance & Counseling (id: 4)
-    if (/\bstress(ed)?\b|\banxiety\b|\banxious\b|\boverwhelmed\b|\bdepressed\b|\bdepression\b|\bcounseling\b|\bcounselor\b|\bbullying\b|\bharassment\b|\bmental\s*health\b|\bwell-?being\b|\bscholarship/i.test(q)) {
-      return offices.find(o => o.id === 4);
+    // Health Clinic (id: 5)
+    if (/\bclinic\b|\bmedical\b|\bdoctor\b|\bphysician\b|\bdental\b|\bhealth\b|\bfirst\s*aid\b/i.test(q)) {
+      return offices.find(o => o.id === 5);
+    }
+    // Library (id: 6)
+    if (/\blibrary\b|\bbook\s*loan\b|\bstudy\s*cubicle\b/i.test(q)) {
+      return offices.find(o => o.id === 6);
+    }
+    // Computer Lab (id: 7)
+    if (/\bcomputer\s*lab\b|\blab\s*workstation\b|\bprogramming\s*lab/i.test(q)) {
+      return offices.find(o => o.id === 7);
+    }
+    // Auditorium (id: 8)
+    if (/\bauditorium\b|\bsymposium\b|\bconvocation/i.test(q)) {
+      return offices.find(o => o.id === 8);
     }
 
-    if (/student\s*affairs|osa\b/i.test(q)) return offices.find(o => o.id === 2);
-    if (/registrar/i.test(q)) return offices.find(o => o.id === 1);
-    if (/cashier/i.test(q)) return offices.find(o => o.id === 3);
     if (/guidance|counseling/i.test(q)) return offices.find(o => o.id === 4);
+    if (/student\s*affairs|osa\b/i.test(q)) return offices.find(o => o.id === 3);
+    if (/registrar/i.test(q)) return offices.find(o => o.id === 1);
+    if (/cashier/i.test(q)) return offices.find(o => o.id === 2);
+    if (/clinic|doctor|health/i.test(q)) return offices.find(o => o.id === 5);
+    if (/library/i.test(q)) return offices.find(o => o.id === 6);
+    if (/computer\s*lab|lab\b/i.test(q)) return offices.find(o => o.id === 7);
+    if (/auditorium/i.test(q)) return offices.find(o => o.id === 8);
 
     return null;
   };
@@ -894,14 +938,20 @@ export default function App() {
 
         let refOff = null;
         if (data.data.detectedOffice) {
-          const code = (data.data.detectedOffice.office_code || '').toLowerCase();
+          const code = (data.data.detectedOffice.office_code || data.data.detectedOffice.code || '').toUpperCase();
           const name = (data.data.detectedOffice.office_name || data.data.detectedOffice.name || '').toLowerCase();
           refOff = offices.find(o => 
-            (code.includes('reg') && o.id === 1) ||
-            (code.includes('osa') && o.id === 2) ||
-            (code.includes('csh') && o.id === 3) ||
-            (code.includes('gdc') && o.id === 4) ||
-            o.n.toLowerCase().includes(name.split("'")[0])
+            (code && (o.code || '').toUpperCase() === code) ||
+            (code.includes('REG') && o.id === 1) ||
+            (code.includes('CSH') && o.id === 2) ||
+            (code.includes('OSA') && o.id === 3) ||
+            (code.includes('GDC') && o.id === 4) ||
+            (code.includes('HLT') && o.id === 5) ||
+            (code.includes('LIB') && o.id === 6) ||
+            (code.includes('LAB') && o.id === 7) ||
+            (code.includes('AUD') && o.id === 8) ||
+            (name && o.n.toLowerCase().includes(name.split("'")[0])) ||
+            (name && name.includes(o.n.toLowerCase().split("'")[0]))
           );
         }
         if (!refOff) {
