@@ -43,7 +43,7 @@ export default function AdminView({ diagnostics, onRefreshDiagnostics, currentUs
   const fetchAuditLogs = async () => {
     setLoading(true);
     try {
-      const res = await fetch('http://localhost:5000/api/admin/audit-logs?limit=50');
+      const res = await fetch('https://unidesk-api.onrender.com/api/admin/audit-logs?limit=50');
       const data = await res.json();
       if (data.success) setAuditLogs(data.data);
     } catch (err) {
@@ -56,7 +56,7 @@ export default function AdminView({ diagnostics, onRefreshDiagnostics, currentUs
   const fetchAnalytics = async () => {
     setLoading(true);
     try {
-      const res = await fetch('http://localhost:5000/api/admin/analytics');
+      const res = await fetch('https://unidesk-api.onrender.com/api/admin/analytics');
       const data = await res.json();
       if (data.success) setAnalytics(data.data);
     } catch (err) {
@@ -72,9 +72,9 @@ export default function AdminView({ diagnostics, onRefreshDiagnostics, currentUs
     try {
       let endpoint = '';
       if (procName === 'sp_resolve_office_by_query') {
-        endpoint = `http://localhost:5000/api/lookup?q=${encodeURIComponent(param || 'lost id')}`;
+        endpoint = `https://unidesk-api.onrender.com/api/lookup?q=${encodeURIComponent(param || 'lost id')}`;
       } else if (procName === 'sp_get_office_analytics') {
-        endpoint = `http://localhost:5000/api/admin/analytics`;
+        endpoint = `https://unidesk-api.onrender.com/api/admin/analytics`;
       }
 
       const startTime = performance.now();
@@ -108,7 +108,7 @@ export default function AdminView({ diagnostics, onRefreshDiagnostics, currentUs
     e.preventDefault();
     setCloudTestResult({ loading: true });
     try {
-      const res = await fetch('http://localhost:5000/api/admin/test-connection', {
+      const res = await fetch('https://unidesk-api.onrender.com/api/admin/test-connection', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ databaseUrl: cloudUrlInput })

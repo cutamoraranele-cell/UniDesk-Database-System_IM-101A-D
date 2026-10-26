@@ -48,7 +48,7 @@ export default function LookupView({ onSelectForBooking, onNavigateToMap, curren
   const fetchResults = async (searchTerm) => {
     setLoading(true);
     try {
-      const res = await fetch(`http://localhost:5000/api/lookup?q=${encodeURIComponent(searchTerm)}`);
+      const res = await fetch(`https://unidesk-api.onrender.com/api/lookup?q=${encodeURIComponent(searchTerm)}`);
       const data = await res.json();
       if (data.success) {
         setResults(data.data);
@@ -66,7 +66,7 @@ export default function LookupView({ onSelectForBooking, onNavigateToMap, curren
     setBookingStatus({ loading: true });
 
     try {
-      const res = await fetch('http://localhost:5000/api/reservations', {
+      const res = await fetch('https://unidesk-api.onrender.com/api/reservations', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

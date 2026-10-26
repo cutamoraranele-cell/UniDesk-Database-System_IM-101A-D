@@ -55,7 +55,7 @@ export default function AuthModal({ isOpen, onClose, onAuthSuccess }) {
 
   const fetchAvailableOffices = async () => {
     try {
-      const res = await fetch('http://localhost:5000/api/lookup?q=');
+      const res = await fetch('https://unidesk-api.onrender.com/api/lookup?q=');
       const data = await res.json();
       if (data.success && data.data) {
         const map = new Map();
@@ -81,7 +81,7 @@ export default function AuthModal({ isOpen, onClose, onAuthSuccess }) {
 
   const fetchDemoAccounts = async () => {
     try {
-      const res = await fetch('http://localhost:5000/api/auth/demo-accounts');
+      const res = await fetch('https://unidesk-api.onrender.com/api/auth/demo-accounts');
       const data = await res.json();
       if (data.success) {
         setDemoAccounts(data.data);
@@ -99,7 +99,7 @@ export default function AuthModal({ isOpen, onClose, onAuthSuccess }) {
     setErrorMsg(null);
 
     try {
-      const res = await fetch('http://localhost:5000/api/auth/login', {
+      const res = await fetch('https://unidesk-api.onrender.com/api/auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email: loginEmail, password: loginPassword })
@@ -133,7 +133,7 @@ export default function AuthModal({ isOpen, onClose, onAuthSuccess }) {
     }
 
     try {
-      const res = await fetch('http://localhost:5000/api/auth/register', {
+      const res = await fetch('https://unidesk-api.onrender.com/api/auth/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -166,7 +166,7 @@ export default function AuthModal({ isOpen, onClose, onAuthSuccess }) {
     setLoading(true);
     setErrorMsg(null);
     try {
-      const res = await fetch('http://localhost:5000/api/auth/login', {
+      const res = await fetch('https://unidesk-api.onrender.com/api/auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email: acc.email, password: 'Password123!' })
@@ -196,7 +196,7 @@ export default function AuthModal({ isOpen, onClose, onAuthSuccess }) {
     setLoading(true);
     setErrorMsg(null);
     try {
-      const res = await fetch('http://localhost:5000/api/auth/forgot-password', {
+      const res = await fetch('https://unidesk-api.onrender.com/api/auth/forgot-password', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email: forgotEmail.trim() })

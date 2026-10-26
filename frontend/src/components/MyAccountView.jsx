@@ -99,8 +99,8 @@ export default function MyAccountView({ currentUser, onUpdateCurrentUser }) {
     try {
       // 1. Fetch facilities & issues for dropdowns
       const [facRes, issRes] = await Promise.all([
-        fetch('http://localhost:5000/api/facilities'),
-        fetch('http://localhost:5000/api/lookup/issues')
+        fetch('https://unidesk-api.onrender.com/api/facilities'),
+        fetch('https://unidesk-api.onrender.com/api/lookup/issues')
       ]);
       const [facData, issData] = await Promise.all([facRes.json(), issRes.json()]);
       if (facData.success) setFacilities(facData.data);
@@ -113,7 +113,7 @@ export default function MyAccountView({ currentUser, onUpdateCurrentUser }) {
 
       // 2. If staff, fetch assigned office details
       if (isStaff && userOfficeId) {
-        const offRes = await fetch(`http://localhost:5000/api/offices/${userOfficeId}`);
+        const offRes = await fetch(`https://unidesk-api.onrender.com/api/offices/${userOfficeId}`);
         const offData = await offRes.json();
         if (offData.success) setOfficeDetails(offData.data);
       }
@@ -122,7 +122,7 @@ export default function MyAccountView({ currentUser, onUpdateCurrentUser }) {
       // If staff: fetch reservations for user's assigned office
       // If admin: fetch all reservations
       // If student: fetch personal reservations
-      let url = 'http://localhost:5000/api/reservations';
+      let url = 'https://unidesk-api.onrender.com/api/reservations';
       const params = [];
       if (isStaff && userOfficeId) {
         params.push(`officeId=${userOfficeId}`);
@@ -152,7 +152,7 @@ export default function MyAccountView({ currentUser, onUpdateCurrentUser }) {
     setProfileStatus({ loading: true });
 
     try {
-      const res = await fetch('http://localhost:5000/api/auth/profile', {
+      const res = await fetch('https://unidesk-api.onrender.com/api/auth/profile', {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -218,7 +218,7 @@ export default function MyAccountView({ currentUser, onUpdateCurrentUser }) {
         ? `${relocateForm.notes ? relocateForm.notes + ' ' : ''}[Emergency Action: ${relocateForm.unseenReason}]`
         : relocateForm.notes;
 
-      const res = await fetch(`http://localhost:5000/api/reservations/${relocateModal.reservation_id}`, {
+      const res = await fetch(`https://unidesk-api.onrender.com/api/reservations/${relocateModal.reservation_id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -255,7 +255,7 @@ export default function MyAccountView({ currentUser, onUpdateCurrentUser }) {
     setDeleteStatus({ loading: true });
 
     try {
-      const res = await fetch(`http://localhost:5000/api/reservations/${deletingRes.reservation_id}`, {
+      const res = await fetch(`https://unidesk-api.onrender.com/api/reservations/${deletingRes.reservation_id}`, {
         method: 'DELETE',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -284,7 +284,7 @@ export default function MyAccountView({ currentUser, onUpdateCurrentUser }) {
 
     try {
       const targetOffice = isStaff ? userOfficeId : (currentUser?.officeId || 1);
-      const res = await fetch('http://localhost:5000/api/reservations', {
+      const res = await fetch('https://unidesk-api.onrender.com/api/reservations', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

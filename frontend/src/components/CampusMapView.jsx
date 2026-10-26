@@ -224,9 +224,9 @@ export default function CampusMapView({
   const fetchData = async () => {
     try {
       const [bRes, fRes, cRes] = await Promise.all([
-        fetch('http://localhost:5000/api/facilities/buildings'),
-        fetch('http://localhost:5000/api/facilities'),
-        fetch('http://localhost:5000/api/facilities/categories')
+        fetch('https://unidesk-api.onrender.com/api/facilities/buildings'),
+        fetch('https://unidesk-api.onrender.com/api/facilities'),
+        fetch('https://unidesk-api.onrender.com/api/facilities/categories')
       ]);
 
       const [bData, fData, cData] = await Promise.all([

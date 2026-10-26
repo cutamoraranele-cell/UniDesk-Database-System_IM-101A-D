@@ -81,8 +81,8 @@ export default function ReservationsView({ currentUserId = 3, currentUser }) {
   const fetchMetadata = async () => {
     try {
       const [offRes, issRes] = await Promise.all([
-        fetch('http://localhost:5000/api/offices'),
-        fetch('http://localhost:5000/api/lookup/issues')
+        fetch('https://unidesk-api.onrender.com/api/offices'),
+        fetch('https://unidesk-api.onrender.com/api/lookup/issues')
       ]);
       const [offData, issData] = await Promise.all([offRes.json(), issRes.json()]);
       if (offData.success) {
@@ -109,10 +109,10 @@ export default function ReservationsView({ currentUserId = 3, currentUser }) {
     setLoading(true);
     try {
       // 1. Personal reservations
-      const personalPromise = fetch(`http://localhost:5000/api/reservations?userId=${currentUserId}`).then(r => r.json());
+      const personalPromise = fetch(`https://unidesk-api.onrender.com/api/reservations?userId=${currentUserId}`).then(r => r.json());
       
       // 2. Operational reservations (if staff, filter by assigned office; if admin, filter by selectedOfficeFilter)
-      let opsUrl = 'http://localhost:5000/api/reservations';
+      let opsUrl = 'https://unidesk-api.onrender.com/api/reservations';
       const params = [];
       if (isStaff && userOfficeId) {
         params.push(`officeId=${userOfficeId}`);
@@ -128,7 +128,7 @@ export default function ReservationsView({ currentUserId = 3, currentUser }) {
       const opsPromise = isStaffOrAdmin ? fetch(opsUrl).then(r => r.json()) : Promise.resolve({ success: true, data: [] });
 
       // 3. Transactions
-      const txnPromise = fetch('http://localhost:5000/api/transactions').then(r => r.json());
+      const txnPromise = fetch('https://unidesk-api.onrender.com/api/transactions').then(r => r.json());
 
       const [pData, oData, tData] = await Promise.all([personalPromise, opsPromise, txnPromise]);
 
@@ -148,7 +148,7 @@ export default function ReservationsView({ currentUserId = 3, currentUser }) {
     setEditStatus({ loading: true });
 
     try {
-      const res = await fetch(`http://localhost:5000/api/reservations/${editingRes.reservation_id}`, {
+      const res = await fetch(`https://unidesk-api.onrender.com/api/reservations/${editingRes.reservation_id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -184,7 +184,7 @@ export default function ReservationsView({ currentUserId = 3, currentUser }) {
     setDeleteStatus({ loading: true });
 
     try {
-      const res = await fetch(`http://localhost:5000/api/reservations/${deletingRes.reservation_id}`, {
+      const res = await fetch(`https://unidesk-api.onrender.com/api/reservations/${deletingRes.reservation_id}`, {
         method: 'DELETE',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -216,7 +216,7 @@ export default function ReservationsView({ currentUserId = 3, currentUser }) {
 
     try {
       const targetOfficeId = isStaff ? userOfficeId : parseInt(newRes.officeId, 10);
-      const res = await fetch('http://localhost:5000/api/reservations', {
+      const res = await fetch('https://unidesk-api.onrender.com/api/reservations', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -256,7 +256,7 @@ export default function ReservationsView({ currentUserId = 3, currentUser }) {
     setPaymentStatus({ loading: true });
 
     try {
-      const res = await fetch('http://localhost:5000/api/transactions/pay', {
+      const res = await fetch('https://unidesk-api.onrender.com/api/transactions/pay', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

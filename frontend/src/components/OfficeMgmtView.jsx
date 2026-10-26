@@ -53,7 +53,7 @@ export default function OfficeMgmtView({ currentUser }) {
   const fetchOffices = async () => {
     setLoading(true);
     try {
-      const res = await fetch('http://localhost:5000/api/offices');
+      const res = await fetch('https://unidesk-api.onrender.com/api/offices');
       const data = await res.json();
       if (data.success) {
         setOffices(data.data);
@@ -67,7 +67,7 @@ export default function OfficeMgmtView({ currentUser }) {
 
   const fetchFacilities = async () => {
     try {
-      const res = await fetch('http://localhost:5000/api/facilities');
+      const res = await fetch('https://unidesk-api.onrender.com/api/facilities');
       const data = await res.json();
       if (data.success) {
         setFacilities(data.data);
@@ -85,7 +85,7 @@ export default function OfficeMgmtView({ currentUser }) {
     setSaveStatus({ loading: true });
 
     try {
-      const res = await fetch(`http://localhost:5000/api/admin/offices/${editingOffice.office_id}`, {
+      const res = await fetch(`https://unidesk-api.onrender.com/api/admin/offices/${editingOffice.office_id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -125,7 +125,7 @@ export default function OfficeMgmtView({ currentUser }) {
 
     setAddStatus({ loading: true });
     try {
-      const res = await fetch('http://localhost:5000/api/admin/offices', {
+      const res = await fetch('https://unidesk-api.onrender.com/api/admin/offices', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
