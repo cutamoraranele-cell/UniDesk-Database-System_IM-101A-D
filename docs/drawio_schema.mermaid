@@ -1,0 +1,186 @@
+erDiagram
+    CAMPUSES ||--o{ BUILDINGS : contains
+    BUILDINGS ||--o{ FACILITIES : contains
+    FACILITY_CATEGORIES ||--o{ FACILITIES : classifies
+    FACILITIES ||--o{ OFFICES : houses
+    OFFICES ||--o{ OFFICE_OPERATING_HOURS : scheduled_by
+    OFFICES ||--o{ ISSUE_OFFICE_MAPPINGS : handles
+    OFFICES ||--o{ OFFICE_STAFF_ASSIGNMENTS : staffs
+    OFFICES ||--o{ OFFICE_RESERVATIONS : hosts
+    OFFICES ||--o{ TRANSACTIONS : collects
+
+    USER_ACCOUNTS ||--|| USER_PROFILES : describes
+    USER_ACCOUNTS ||--o{ OFFICE_STAFF_ASSIGNMENTS : assigned_to
+    USER_ACCOUNTS ||--o{ OFFICE_RESERVATIONS : books
+    USER_ACCOUNTS ||--o{ TRANSACTIONS : pays
+
+    ISSUE_CATEGORIES ||--o{ ISSUES : categorizes
+    ISSUES ||--o{ ISSUE_OFFICE_MAPPINGS : resolved_at
+    ISSUES ||--o{ OFFICE_RESERVATIONS : requested_in
+    ISSUES ||--o{ TRANSACTIONS : billed_for
+
+    OFFICE_RESERVATIONS ||--o| TRANSACTIONS : settles
+
+    CAMPUSES {
+        int campus_id PK
+        varchar campus_code UK
+        varchar name
+        varchar address
+        decimal latitude
+        decimal longitude
+        datetime created_at
+    }
+
+    BUILDINGS {
+        int building_id PK
+        int campus_id FK
+        varchar building_code UK
+        varchar name
+        tinyint total_floors
+        decimal latitude
+        decimal longitude
+        datetime created_at
+    }
+
+    FACILITY_CATEGORIES {
+        int category_id PK
+        varchar category_code UK
+        varchar name
+        varchar description
+        varchar icon_name
+    }
+
+    FACILITIES {
+        int facility_id PK
+        int building_id FK
+        int category_id FK
+        varchar room_number
+        tinyint floor_number
+        varchar name
+        text description
+        boolean is_public
+        datetime created_at
+    }
+
+    OFFICES {
+        int office_id PK
+        int facility_id FK
+        varchar office_code UK
+        varchar name
+        varchar email
+        varchar phone
+        text desk_directions
+        boolean is_accepting_payments
+        boolean is_accepting_reservations
+        datetime created_at
+        datetime updated_at
+    }
+
+    OFFICE_OPERATING_HOURS {
+        int hours_id PK
+        int office_id FK
+        tinyint day_of_week
+        time open_time
+        time close_time
+        boolean is_closed
+    }
+
+    USER_ACCOUNTS {
+        int user_id PK
+        varchar email UK
+        varchar password_hash
+        enum user_role
+        boolean is_active
+        datetime created_at
+        datetime updated_at
+    }
+
+    USER_PROFILES {
+        int profile_id PK
+        int user_id FK, UK
+        varchar student_or_visitor_id UK
+        varchar full_name
+        varchar phone_number
+        varchar department_or_affiliation
+        datetime created_at
+        datetime updated_at
+    }
+
+    ISSUE_CATEGORIES {
+        int issue_category_id PK
+        varchar category_name UK
+        varchar description
+    }
+
+    ISSUES {
+        int issue_id PK
+        int issue_category_id FK
+        varchar issue_code UK
+        varchar issue_name
+        text description
+        decimal standard_fee
+        boolean requires_in_person
+        datetime created_at
+    }
+
+    ISSUE_OFFICE_MAPPINGS {
+        int mapping_id PK
+        int issue_id FK
+        int office_id FK
+        enum priority_level
+        text resolution_guide
+        int avg_resolution_minutes
+        boolean is_active
+        datetime mapped_at
+    }
+
+    OFFICE_STAFF_ASSIGNMENTS {
+        int assignment_id PK
+        int user_id FK
+        int office_id FK
+        enum assigned_role
+        enum assignment_status
+        enum shift_schedule
+        boolean can_process_payments
+        int daily_case_quota
+        datetime assigned_at
+    }
+
+    OFFICE_RESERVATIONS {
+        int reservation_id PK
+        int user_id FK
+        int office_id FK
+        int issue_id FK
+        date reservation_date
+        time slot_time
+        enum status
+        text notes
+        varchar location_override
+        datetime created_at
+        datetime updated_at
+    }
+
+    TRANSACTIONS {
+        int transaction_id PK
+        int reservation_id FK
+        int user_id FK
+        int office_id FK
+        int issue_id FK
+        decimal amount
+        enum payment_method
+        enum payment_status
+        varchar reference_no UK
+        datetime paid_at
+        datetime created_at
+    }
+
+    AUDIT_LOGS {
+        bigint log_id PK
+        varchar table_name
+        enum action_type
+        varchar record_id
+        json old_values
+        json new_values
+        varchar performed_by
+        datetime performed_at
+    }

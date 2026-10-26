@@ -1,0 +1,120 @@
+dbms	table_schema	table_name	column_name	ordinal_position	data_type	character_maximum_length	constraint_type	referenced_table_schema	referenced_table_name	referenced_column_name
+mysql	unidesk_db	campuses	campus_id	1	int		PRIMARY KEY			
+mysql	unidesk_db	campuses	campus_code	2	varchar	20	UNIQUE			
+mysql	unidesk_db	campuses	name	3	varchar	150				
+mysql	unidesk_db	campuses	address	4	varchar	255				
+mysql	unidesk_db	campuses	latitude	5	decimal					
+mysql	unidesk_db	campuses	longitude	6	decimal					
+mysql	unidesk_db	campuses	created_at	7	datetime					
+mysql	unidesk_db	buildings	building_id	1	int		PRIMARY KEY			
+mysql	unidesk_db	buildings	campus_id	2	int		FOREIGN KEY	unidesk_db	campuses	campus_id
+mysql	unidesk_db	buildings	building_code	3	varchar	20	UNIQUE			
+mysql	unidesk_db	buildings	name	4	varchar	150				
+mysql	unidesk_db	buildings	total_floors	5	tinyint					
+mysql	unidesk_db	buildings	latitude	6	decimal					
+mysql	unidesk_db	buildings	longitude	7	decimal					
+mysql	unidesk_db	buildings	created_at	8	datetime					
+mysql	unidesk_db	facility_categories	category_id	1	int		PRIMARY KEY			
+mysql	unidesk_db	facility_categories	category_code	2	varchar	30	UNIQUE			
+mysql	unidesk_db	facility_categories	name	3	varchar	100				
+mysql	unidesk_db	facility_categories	description	4	varchar	255				
+mysql	unidesk_db	facility_categories	icon_name	5	varchar	50				
+mysql	unidesk_db	facilities	facility_id	1	int		PRIMARY KEY			
+mysql	unidesk_db	facilities	building_id	2	int		FOREIGN KEY	unidesk_db	buildings	building_id
+mysql	unidesk_db	facilities	category_id	3	int		FOREIGN KEY	unidesk_db	facility_categories	category_id
+mysql	unidesk_db	facilities	room_number	4	varchar	30				
+mysql	unidesk_db	facilities	floor_number	5	tinyint					
+mysql	unidesk_db	facilities	name	6	varchar	150				
+mysql	unidesk_db	facilities	description	7	text					
+mysql	unidesk_db	facilities	is_public	8	boolean					
+mysql	unidesk_db	facilities	created_at	9	datetime					
+mysql	unidesk_db	offices	office_id	1	int		PRIMARY KEY			
+mysql	unidesk_db	offices	facility_id	2	int		FOREIGN KEY	unidesk_db	facilities	facility_id
+mysql	unidesk_db	offices	office_code	3	varchar	30	UNIQUE			
+mysql	unidesk_db	offices	name	4	varchar	150				
+mysql	unidesk_db	offices	email	5	varchar	120				
+mysql	unidesk_db	offices	phone	6	varchar	40				
+mysql	unidesk_db	offices	desk_directions	7	text					
+mysql	unidesk_db	offices	is_accepting_payments	8	boolean					
+mysql	unidesk_db	offices	is_accepting_reservations	9	boolean					
+mysql	unidesk_db	offices	created_at	10	datetime					
+mysql	unidesk_db	offices	updated_at	11	datetime					
+mysql	unidesk_db	office_operating_hours	hours_id	1	int		PRIMARY KEY			
+mysql	unidesk_db	office_operating_hours	office_id	2	int		FOREIGN KEY	unidesk_db	offices	office_id
+mysql	unidesk_db	office_operating_hours	day_of_week	3	tinyint					
+mysql	unidesk_db	office_operating_hours	open_time	4	time					
+mysql	unidesk_db	office_operating_hours	close_time	5	time					
+mysql	unidesk_db	office_operating_hours	is_closed	6	boolean					
+mysql	unidesk_db	user_accounts	user_id	1	int		PRIMARY KEY			
+mysql	unidesk_db	user_accounts	email	2	varchar	120	UNIQUE			
+mysql	unidesk_db	user_accounts	password_hash	3	varchar	255				
+mysql	unidesk_db	user_accounts	user_role	4	enum					
+mysql	unidesk_db	user_accounts	is_active	5	boolean					
+mysql	unidesk_db	user_accounts	created_at	6	datetime					
+mysql	unidesk_db	user_accounts	updated_at	7	datetime					
+mysql	unidesk_db	user_profiles	profile_id	1	int		PRIMARY KEY			
+mysql	unidesk_db	user_profiles	user_id	2	int		FOREIGN KEY	unidesk_db	user_accounts	user_id
+mysql	unidesk_db	user_profiles	student_or_visitor_id	3	varchar	50	UNIQUE			
+mysql	unidesk_db	user_profiles	full_name	4	varchar	120				
+mysql	unidesk_db	user_profiles	phone_number	5	varchar	30				
+mysql	unidesk_db	user_profiles	department_or_affiliation	6	varchar	120				
+mysql	unidesk_db	user_profiles	created_at	7	datetime					
+mysql	unidesk_db	user_profiles	updated_at	8	datetime					
+mysql	unidesk_db	issue_categories	issue_category_id	1	int		PRIMARY KEY			
+mysql	unidesk_db	issue_categories	category_name	2	varchar	80	UNIQUE			
+mysql	unidesk_db	issue_categories	description	3	varchar	255				
+mysql	unidesk_db	issues	issue_id	1	int		PRIMARY KEY			
+mysql	unidesk_db	issues	issue_category_id	2	int		FOREIGN KEY	unidesk_db	issue_categories	issue_category_id
+mysql	unidesk_db	issues	issue_code	3	varchar	30	UNIQUE			
+mysql	unidesk_db	issues	issue_name	4	varchar	150				
+mysql	unidesk_db	issues	description	5	text					
+mysql	unidesk_db	issues	standard_fee	6	decimal					
+mysql	unidesk_db	issues	requires_in_person	7	boolean					
+mysql	unidesk_db	issues	created_at	8	datetime					
+mysql	unidesk_db	issue_office_mappings	mapping_id	1	int		PRIMARY KEY			
+mysql	unidesk_db	issue_office_mappings	issue_id	2	int		FOREIGN KEY	unidesk_db	issues	issue_id
+mysql	unidesk_db	issue_office_mappings	office_id	3	int		FOREIGN KEY	unidesk_db	offices	office_id
+mysql	unidesk_db	issue_office_mappings	priority_level	4	enum					
+mysql	unidesk_db	issue_office_mappings	resolution_guide	5	text					
+mysql	unidesk_db	issue_office_mappings	avg_resolution_minutes	6	int					
+mysql	unidesk_db	issue_office_mappings	is_active	7	boolean					
+mysql	unidesk_db	issue_office_mappings	mapped_at	8	datetime					
+mysql	unidesk_db	office_staff_assignments	assignment_id	1	int		PRIMARY KEY			
+mysql	unidesk_db	office_staff_assignments	user_id	2	int		FOREIGN KEY	unidesk_db	user_accounts	user_id
+mysql	unidesk_db	office_staff_assignments	office_id	3	int		FOREIGN KEY	unidesk_db	offices	office_id
+mysql	unidesk_db	office_staff_assignments	assigned_role	4	enum					
+mysql	unidesk_db	office_staff_assignments	assignment_status	5	enum					
+mysql	unidesk_db	office_staff_assignments	shift_schedule	6	enum					
+mysql	unidesk_db	office_staff_assignments	can_process_payments	7	boolean					
+mysql	unidesk_db	office_staff_assignments	daily_case_quota	8	int					
+mysql	unidesk_db	office_staff_assignments	assigned_at	9	datetime					
+mysql	unidesk_db	office_reservations	reservation_id	1	int		PRIMARY KEY			
+mysql	unidesk_db	office_reservations	user_id	2	int		FOREIGN KEY	unidesk_db	user_accounts	user_id
+mysql	unidesk_db	office_reservations	office_id	3	int		FOREIGN KEY	unidesk_db	offices	office_id
+mysql	unidesk_db	office_reservations	issue_id	4	int		FOREIGN KEY	unidesk_db	issues	issue_id
+mysql	unidesk_db	office_reservations	reservation_date	5	date					
+mysql	unidesk_db	office_reservations	slot_time	6	time					
+mysql	unidesk_db	office_reservations	status	7	enum					
+mysql	unidesk_db	office_reservations	notes	8	text					
+mysql	unidesk_db	office_reservations	location_override	9	varchar	255				
+mysql	unidesk_db	office_reservations	created_at	10	datetime					
+mysql	unidesk_db	office_reservations	updated_at	11	datetime					
+mysql	unidesk_db	transactions	transaction_id	1	int		PRIMARY KEY			
+mysql	unidesk_db	transactions	reservation_id	2	int		FOREIGN KEY	unidesk_db	office_reservations	reservation_id
+mysql	unidesk_db	transactions	user_id	3	int		FOREIGN KEY	unidesk_db	user_accounts	user_id
+mysql	unidesk_db	transactions	office_id	4	int		FOREIGN KEY	unidesk_db	offices	office_id
+mysql	unidesk_db	transactions	issue_id	5	int		FOREIGN KEY	unidesk_db	issues	issue_id
+mysql	unidesk_db	transactions	amount	6	decimal					
+mysql	unidesk_db	transactions	payment_method	7	enum					
+mysql	unidesk_db	transactions	payment_status	8	enum					
+mysql	unidesk_db	transactions	reference_no	9	varchar	80	UNIQUE			
+mysql	unidesk_db	transactions	paid_at	10	datetime					
+mysql	unidesk_db	transactions	created_at	11	datetime					
+mysql	unidesk_db	audit_logs	log_id	1	bigint		PRIMARY KEY			
+mysql	unidesk_db	audit_logs	table_name	2	varchar	64				
+mysql	unidesk_db	audit_logs	action_type	3	enum					
+mysql	unidesk_db	audit_logs	record_id	4	varchar	64				
+mysql	unidesk_db	audit_logs	old_values	5	json					
+mysql	unidesk_db	audit_logs	new_values	6	json					
+mysql	unidesk_db	audit_logs	performed_by	7	varchar	100				
+mysql	unidesk_db	audit_logs	performed_at	8	datetime					
