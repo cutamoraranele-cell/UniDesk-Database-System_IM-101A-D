@@ -1274,7 +1274,7 @@ export default function App() {
   function generateLocalSmartReply(query, offs, isss, facs) {
     const q = (query || '').toLowerCase().trim();
     if (!q) {
-      return "I'm sorry, I don't have specific information for that concern in the current campus directory. Please contact the General Admin Office for assistance.";
+      return "Hello! How can I assist you with university offices, student IDs, payments, or appointments today?";
     }
 
     // 1. Check for Ambiguous Queries (Confirm Intent)
@@ -1375,8 +1375,8 @@ export default function App() {
       return "Please reach out to **Guidance and Counseling**. They offer counseling sessions, mental health support, bullying intervention, and scholarship information.";
     }
 
-    // Fallback strictly as specified
-    return "I'm sorry, I don't have specific information for that concern in the current campus directory. Please contact the General Admin Office for assistance.";
+    // Fallback with helpful campus services directory
+    return "I couldn't find an exact match for that concern in our campus directory. You can ask me about Student IDs, Transcripts, Tuition & Fees, Guidance Counseling, or visit the General Admin Office for direct assistance!";
   }
 
   // --------------------------------------------------------------------------

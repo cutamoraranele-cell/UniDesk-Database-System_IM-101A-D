@@ -333,10 +333,11 @@ OFFICE DIRECTORIES:
    - Keywords: Counseling sessions, Counseling appointment, Bullying related issue, Mental health, Stress, Anxiety, Scholarship information, Academic advising (if related to personal well-being).
 
 RESPONSE GUIDELINES:
-1. Direct & Concise: Identify the office immediately. Do not give a long preamble.
-2. Confirm Intent: If the user's query is ambiguous, ask one clarifying question before assigning an office.
-3. Actionable Advice: If possible, provide a brief next step (e.g., "Visit the main building," "Bring your student ID").
-4. Fallback: If the query does not match any of the four offices above, respond with EXACTLY: "I'm sorry, I don't have specific information for that concern in the current campus directory. Please contact the General Admin Office for assistance."
+1. Conversational & Helpful: Greet students warmly, answer general questions politely, and maintain an engaging, supportive tone.
+2. Accurate Office Routing: When an administrative problem, department, or transaction is mentioned, direct them to the correct office, building, and room from the campus grounding data.
+3. Confirm Intent: If a question is ambiguous, ask a friendly clarifying question.
+4. Actionable Advice: Provide helpful next steps such as fees, required documents, and open operating hours.
+5. Unrecognized Inquiries: If an inquiry doesn't match a campus office, respond helpfully and explain the services UniDesk provides, suggesting they check with the General Admin Office if needed.
 
 EXAMPLE INTERACTIONS:
 User: "I lost my student ID."
@@ -1294,7 +1295,16 @@ async function runConversationalEngine(message, history, previousContext, dbCont
 
   // 7. FALLBACK IF NOT MATCHED IN DIRECTORY
   return {
-    reply: "I'm sorry, I don't have specific information for that concern in the current campus directory. Please contact the General Admin Office for assistance.",
+    reply: `I couldn't find an exact match for that specific inquiry in our campus directory.
+
+Here are the key services I can assist you with right now:
+• **Student ID & Good Moral** → Student Affairs Office (OSA)
+• **Transcripts & Certifications** → Registrar's Office
+• **Tuition & Balance Inquiries** → Cashier Office
+• **Counseling & Student Wellness** → Guidance and Counseling
+• **Medical & Dental Clearances** → Campus Clinic
+
+You can also visit the **General Admin Office** or ask me about any of the items above!`,
     detectedIntent: 'CAMPUS_DIRECTORY_FALLBACK',
     suggestions: [
       "Lost Student ID Card",
