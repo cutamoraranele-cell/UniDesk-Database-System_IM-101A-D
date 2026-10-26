@@ -1351,8 +1351,8 @@ export default function App() {
     if (/\bcounseling(\s*(sessions?|appointments?))?\b|\bcounselor\b/i.test(q)) {
       return "Please reach out to **Guidance and Counseling**. They offer confidential counseling appointments and personal guidance.";
     }
-    if (/\bbullying(\s*related\s*issue)?\b|\bharassment\b/i.test(q)) {
-      return "Please report to **Guidance and Counseling**. They provide confidential counseling and intervention for bullying-related concerns.";
+    if (/\b(bulli(ed|es|ng)?|cyberbulli(ed|es|ng)?|harass(ed|ing|ment)?|threat(ened|ening)?)\b/i.test(q)) {
+      return "I am very sorry to hear that. Bullying and harassment violate the student code of conduct. Please reach out to **Guidance and Counseling** (Activity Center Building, Room 202) for confidential emotional support and counseling, or report the incident to the **Student Affairs Office (OSA)** (Activity Center Building, Room 201) for formal disciplinary investigation.";
     }
     if (/\bmental\s*health\b|\bwell-?being\b/i.test(q)) {
       return "Please reach out to **Guidance and Counseling**. They offer dedicated mental health support and personal counseling.";

@@ -992,6 +992,54 @@ async function runConversationalEngine(message, history, previousContext, dbCont
     };
   }
 
+  // 1.5. DEDICATED STUDENT WELFARE: BULLYING, HARASSMENT, MENTAL HEALTH & GRIEVANCES
+  if (/\b(bulli(ed|es|ng)?|cyberbulli(ed|es|ng)?|harass(ed|ing|ment)?|threat(ened|ening)?|abuse(d)?|depression|depressed|anxious|anxiety|mental\s*health|suicid)\b/i.test(cleanMsg)) {
+    const guidanceOffice = (dbContext.offices || []).find(o => o.office_code === 'GDC-01' || (o.office_name && o.office_name.toLowerCase().includes('guidance'))) || {
+      office_name: 'Guidance & Counseling Center',
+      office_code: 'GDC-01',
+      building_name: 'Activity Center Building',
+      room_number: 'Room 202',
+      floor_number: 2,
+      phone: '+63 (38) 411-2283 ext 205',
+      email: 'guidance@unidesk.edu',
+      desk_directions: 'Activity Center Building 2nd Floor, Room 202'
+    };
+    const osaOffice = (dbContext.offices || []).find(o => o.office_code === 'OSA-01' || (o.office_name && o.office_name.toLowerCase().includes('student affairs'))) || {
+      office_name: 'Student Affairs Office (OSA)',
+      office_code: 'OSA-01',
+      building_name: 'Activity Center Building',
+      room_number: 'Room 201',
+      floor_number: 2,
+      phone: '+63 (38) 411-2283 ext 201',
+      email: 'studentaffairs@unidesk.edu',
+      desk_directions: 'Activity Center Building 2nd Floor, Room 201'
+    };
+
+    return {
+      reply: `I am very sorry to hear that you are experiencing this. Bullying and online harassment are strict violations of the university code of conduct, and you do not have to face this alone. Here is the immediate help available to you on campus:\n\n` +
+        `🤝 **1. Confidential Counseling & Emotional Support:**\n` +
+        `• **Office:** **${guidanceOffice.office_name}** (${guidanceOffice.office_code})\n` +
+        `• **Location:** ${guidanceOffice.building_name}, ${guidanceOffice.room_number} (Floor ${guidanceOffice.floor_number})\n` +
+        `• **Contact:** ${guidanceOffice.phone} | ✉️ ${guidanceOffice.email}\n` +
+        `• Certified guidance counselors provide private, confidential sessions to support your well-being and guide you through next steps.\n\n` +
+        `⚖️ **2. Formal Incident Report & Student Disciplinary Action:**\n` +
+        `• **Office:** **${osaOffice.office_name}** (${osaOffice.office_code})\n` +
+        `• **Location:** ${osaOffice.building_name}, ${osaOffice.room_number} (Floor ${osaOffice.floor_number})\n` +
+        `• **Contact:** ${osaOffice.phone} | ✉️ ${osaOffice.email}\n` +
+        `• To file an official complaint against a student, bring screenshots, messages, or other evidence to the OSA counter for investigation under the Student Disciplinary Board.\n\n` +
+        `Would you like to book a confidential consultation with the **Guidance & Counseling Center**?`,
+      detectedOffice: guidanceOffice,
+      detectedIntent: 'STUDENT_WELFARE_SUPPORT',
+      suggestions: [
+        "📅 Book Guidance Appointment",
+        "⚖️ How to File OSA Report",
+        "⏰ Guidance Operating Hours",
+        "🧭 Directions to Activity Center"
+      ],
+      engineUsed: 'UNIDESK_COGNITIVE_ENGINE'
+    };
+  }
+
   // 2. CHECK FOR MULTI-TURN CONTEXT (e.g. Follow-up booking, directions, or hours)
   const isFollowUpBooking = /^(yes|yeah|sure|please\s*do|book\s*it|schedule\s*it|reserve\s*it|make\s*an\s*appointment|proceed)\b/i.test(cleanMsg) ||
     /book|schedule|reserve|appointment/i.test(cleanMsg);
