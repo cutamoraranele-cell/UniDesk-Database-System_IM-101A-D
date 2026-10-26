@@ -1,0 +1,11 @@
+{
+  "name": "unidesk-database-system",
+  "version": "1.0.0",
+  "description": "UniDesk Campus Management Platform & Relational Database Engine",
+  "private": true,
+  "scripts": {
+    "build": "npm --prefix backend install",
+    "postinstall": "npm --prefix backend install",
+    "start": "npm --prefix backend start"
+  }
+}
