@@ -1,5 +1,6 @@
 import mysql from 'mysql2/promise';
 import { executeQuery, getEngineDiagnostics } from '../config/db.js';
+import { runMigrations } from '../scripts/migrate.js';
 
 /**
  * Live stream of database engine triggers audit logs
@@ -267,6 +268,31 @@ export async function createOffice(req, res, next) {
         officeCode: officeCode.toUpperCase(),
         name
       }
+    });
+  } catch (error) {
+    next(error);
+  }
+}
+
+/**
+ * Trigger cloud database migrations on demand (Web or API)
+ */
+export async function triggerMigration(req, res, next) {
+  try {
+    const overrideUrl = req.body?.databaseUrl || req.query?.databaseUrl || null;
+    const result = await runMigrations(overrideUrl);
+    if (!result.success) {
+      return res.status(500).json({
+        success: false,
+        message: 'Database migration encountered an error',
+        error: result.error,
+        details: result.results
+      });
+    }
+    res.json({
+      success: true,
+      message: `UniDesk 3NF schema, triggers, routines, and seed data applied successfully to "${result.activeDb}"!`,
+      details: result.results
     });
   } catch (error) {
     next(error);

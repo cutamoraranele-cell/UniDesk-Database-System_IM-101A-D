@@ -5,7 +5,8 @@ import {
   getSecurityDiagnostics, 
   testConnection, 
   updateOffice,
-  createOffice
+  createOffice,
+  triggerMigration
 } from '../controllers/admin.controller.js';
 
 const router = Router();
@@ -16,5 +17,6 @@ router.get('/security-diagnostics', getSecurityDiagnostics);
 router.post('/test-connection', testConnection);
 router.post('/offices', createOffice);
 router.put('/offices/:id', updateOffice);
+router.all('/migrate', triggerMigration);
 
 export default router;
