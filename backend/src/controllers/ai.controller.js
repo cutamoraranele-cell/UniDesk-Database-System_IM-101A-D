@@ -168,63 +168,17 @@ async function resolveWorkingGeminiModel(apiKey) {
     return resolvedGeminiModelCache.get(cleanKey);
   }
 
-  // 1. Try querying ListModels on v1beta
-  try {
-    const listRes = await fetch(`https://generativelanguage.googleapis.com/v1beta/models?key=${cleanKey}`);
-    if (listRes.ok) {
-      const listData = await listRes.json();
-      const availableModels = (listData.models || []).filter(m => 
-        Array.isArray(m.supportedGenerationMethods) && 
-        m.supportedGenerationMethods.includes('generateContent')
-      );
-
-      if (availableModels.length > 0) {
-        // Preferred models in priority order
-        const priorityRegexes = [
-          /gemini-3\.8-flash/i,
-          /gemini-3\.7-flash/i,
-          /gemini-3\.6-flash/i,
-          /gemini-3\.5-flash/i,
-          /gemini-3-flash/i,
-          /gemini-2\.5-flash/i,
-          /gemini-2\.0-flash/i,
-          /gemini-1\.5-flash-latest/i,
-          /gemini-1\.5-flash/i,
-          /gemini-pro/i
-        ];
-
-        for (const regex of priorityRegexes) {
-          const match = availableModels.find(m => regex.test(m.name));
-          if (match) {
-            const modelName = match.name.replace(/^models\//, '');
-            const config = { model: modelName, apiVersion: 'v1beta' };
-            resolvedGeminiModelCache.set(cleanKey, config);
-            return config;
-          }
-        }
-
-        // Otherwise pick the first model supporting generateContent
-        const firstModel = availableModels[0].name.replace(/^models\//, '');
-        const config = { model: firstModel, apiVersion: 'v1beta' };
-        resolvedGeminiModelCache.set(cleanKey, config);
-        return config;
-      }
-    }
-  } catch (err) {
-    console.warn('ModelService.ListModels query failed, attempting candidate probes:', err.message);
-  }
-
-  // 2. Candidate probes: try models in sequence
-  const candidates = [
-    { model: 'gemini-3.8-flash', apiVersion: 'v1beta' },
-    { model: 'gemini-3.7-flash', apiVersion: 'v1beta' },
+  // Production candidates with high quota limits (1,500 requests/day vs 20 for experimental)
+  const candidateModels = [
     { model: 'gemini-2.5-flash', apiVersion: 'v1beta' },
     { model: 'gemini-2.0-flash', apiVersion: 'v1beta' },
+    { model: 'gemini-1.5-flash', apiVersion: 'v1beta' },
     { model: 'gemini-1.5-flash-latest', apiVersion: 'v1beta' },
-    { model: 'gemini-1.5-flash', apiVersion: 'v1beta' }
+    { model: 'gemini-2.0-flash-lite', apiVersion: 'v1beta' },
+    { model: 'gemini-3.8-flash', apiVersion: 'v1beta' }
   ];
 
-  for (const c of candidates) {
+  for (const c of candidateModels) {
     try {
       const probeRes = await fetch(`https://generativelanguage.googleapis.com/${c.apiVersion}/models/${c.model}:generateContent?key=${cleanKey}`, {
         method: 'POST',
@@ -238,12 +192,12 @@ async function resolveWorkingGeminiModel(apiKey) {
         return c;
       }
     } catch (e) {
-      // Continue to next probe
+      // Try next candidate
     }
   }
 
-  // Default fallback to latest Gemini Flash
-  const fallback = { model: 'gemini-3.8-flash', apiVersion: 'v1beta' };
+  // Fallback default
+  const fallback = { model: 'gemini-2.5-flash', apiVersion: 'v1beta' };
   resolvedGeminiModelCache.set(cleanKey, fallback);
   return fallback;
 }
