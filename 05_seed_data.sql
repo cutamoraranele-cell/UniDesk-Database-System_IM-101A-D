@@ -1,7 +1,3 @@
--- ============================================================================
--- UNIDESK DATABASE SYSTEM (CAMPUS LOOKUP & ADMINISTRATIVE HUB)
--- MODULE 05: SEED DATA GENERATOR
--- ============================================================================
 
 USE `unidesk_db`;
 
